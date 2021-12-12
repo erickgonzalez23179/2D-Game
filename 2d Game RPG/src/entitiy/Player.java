@@ -18,7 +18,8 @@ public class Player extends Entity {
 	
 	public final int screenX;
 	public final int screenY;
-	int hasKey = 0;
+	public int hasKey = 0;
+	int standCounter = 0;
 	
 	public Player(GamePanel gp, KeyHandler keyH) {
 		this.gp = gp;
@@ -114,6 +115,15 @@ public class Player extends Entity {
 				spriteCounter = 0;
 			}
 		}
+		else {
+			standCounter++;
+			
+			if(standCounter == 20) {
+				spriteNum = 1;
+				standCounter = 0;
+			}
+			
+		}
 	}
 	
 	public void pickUpObject(int i) {
@@ -126,20 +136,29 @@ public class Player extends Entity {
 				gp.playSE(1);
 				hasKey++;
 				gp.obj[i] = null;
-				System.out.println("Key:" +hasKey);
+				gp.ui.showMessage("You picked up a key!");
 				break;
 			case "Door":
 				if(hasKey > 0 ) {
 					gp.playSE(3);
 					gp.obj[i] = null;
 					hasKey--;
-					System.out.println("Key:" +hasKey);
+					gp.ui.showMessage("You used the key and opened a door!");
+				}
+				else {
+					gp.ui.showMessage("You need a key!");
 				}
 				break;
 			case "Boots":
 				gp.playSE(2);
-				speed += 4;
+				speed += 1;
 				gp.obj[i] = null;
+				gp.ui.showMessage("You picked up running shoes, You are now faster!");
+				break;
+			case "Chest":
+				gp.ui.gameFinished = true;
+				gp.stopMusic();
+				gp.playSE(4);
 				break;
 			}
 		}
